@@ -14,6 +14,9 @@ def build_tram_stops(jsonobject='tramstops.json'):
     return(dic)
 
 
+
+
+
 def build_tram_lines(lines='tramlines.txt'):
 
     with open(lines, encoding='utf-8') as f:
