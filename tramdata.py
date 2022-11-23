@@ -222,6 +222,7 @@ def dialogue(jsonfile='tramnetwork.json'):
     return ans
 
 
+
 if __name__ == '__main__': #This code was given
     if sys.argv[1:] == ['init']:
         build_tram_network()
