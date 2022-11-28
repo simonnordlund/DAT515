@@ -16,7 +16,6 @@ class Graph():
                     temp_list.append(inner)
                 self.dic[outer] = temp_list
             
-
     def neighbours(self, vertex):
         return self.dic[vertex]
 
@@ -74,6 +73,28 @@ class Graph():
         self.dic_val[vertex] = value
         return self.dic_val
 
-graph = Graph()
 
-print(graph.remove_edge("Chalmers", "Korsvägen"))
+    class WeightedGraph():
+
+        def __init__(self):
+            with open(TRAM_FILE, 'r', encoding='utf-8') as infile:
+                self.data = json.load(infile)
+                self.dic_weight = self.data['times']
+
+        def get_weight(self, vertex1, vertex2):
+            return self.dic_weight[vertex1][vertex2]
+
+        def set_weight(self, vertex1, vertex2, weight):
+            self.dic_weight[vertex1][vertex2] = weight
+            self.dic_weight[vertex2][vertex1] = weight
+            return self.dic_weight
+
+            
+    def dijkstra(graph, source, cost=lambda u,v: 1):
+
+
+
+graph = Graph()
+graph2 = Graph.WeightedGraph()
+
+print(graph2.set_weight("Chalmers", "Korsvägen", 7))
