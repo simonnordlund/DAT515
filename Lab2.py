@@ -95,7 +95,7 @@ class Graph():
 
 graphs = Graph()
 graph_weight = Graph.WeightedGraph()
-
+'''
 def djikstra(graph, source):
 
     with open(graph, 'r', encoding='utf-8') as infile:
@@ -104,6 +104,7 @@ def djikstra(graph, source):
         unvisited = list(data['times'].keys())
         tent_dist = graphs.set_vertex_value(unvisited, float('inf'))
         tent_dist[source] = 0
+        tent_dist_temp = tent_dist
         current = source
 
         while unvisited != []:
@@ -112,14 +113,66 @@ def djikstra(graph, source):
                     neighbour = graphs.neighbours(current)[i]
                     weight = tent_dist[current] + data['times'][current][neighbour] #weight for nieghbour + weight current
                     if weight < tent_dist[neighbour]: #if weight smaller than tentative dist
-                        tent_dist[neighbour] = graphs.set_vertex_value(neighbour, weight) #set new tent dist to weigth
-            print(tent_dist)
+                        tent_dist[neighbour] = weight #set new tent dist to weigth
+                        tent_dist_temp[neighbour] = weight
             unvisited.remove(current) #current visited so remove
-            current = min(tent_dist.values())
-            print(current)
+            tent_dist_temp.pop(current)
+            current = min(tent_dist_temp)
+            #print(current)
     return tent_dist
 
-print(djikstra('tramnetwork.json', 'Chalmers'))
+print(djikstra('tramnetwork.json', 'Chalmers')) '''
+
+def dijkstra(source, target):
+
+    graphs = Graph()
+    graphs_weight = Graph.WeightedGraph()
+    dist = {}
+    prev = {}
+    unvisited = []
+
+    for v in graphs.vertices():
+        dist[v] = float('inf')
+
+    unvisited = graphs.vertices()
+
+    dist[source] = 0
+
+    while unvisited != []:
+
+        temp_dist = {}
+        for stop in unvisited:
+            temp_dist[stop] = dist[stop]
+
+        min_val = min(temp_dist.values())
+        current = [key for key in temp_dist if temp_dist[key] == min_val]
+        current = current[0]
+
+        unvisited.remove(current)
+        neighbour = graphs.neighbours(current)
+
+        for i in range(len(neighbour)):
+            if neighbour[i] in unvisited:
+                alt = dist[current] + graphs_weight.get_weight(current, neighbour[i])
+                if alt < dist[neighbour[i]]:
+                  dist[neighbour[i]] = alt
+                  prev[neighbour[i]] = current
+
+    S = []
+    u = target
+    if u in prev or u == source:          
+      while u in prev:   
+        S.append(u)                   
+        u = prev[u]  
+    S.append(source)                     
+
+    return S
+
+print(dijkstra('Chalmers', 'Långedrag'))
+
+
+
+
 
 
 
