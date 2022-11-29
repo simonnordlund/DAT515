@@ -70,7 +70,11 @@ class Graph():
         return self.dic_val[vertex]
 
     def set_vertex_value(self, vertex, value):
-        self.dic_val[vertex] = value
+        if isinstance(vertex, list):
+            for i in range(len(vertex)):
+                self.dic_val[vertex[i]] = value
+        else:
+            self.dic[vertex] = value
         return self.dic_val
 
 
@@ -98,29 +102,25 @@ def djikstra(graph, source):
         graphs = Graph()
         data = json.load(infile)
         unvisited = list(data['times'].keys())
-        tent_dist = {}
-
-        for i in range(len(unvisited)):
-            tent_dist[unvisited[i]] = graphs.set_vertex_value(unvisited[i], float('inf'))
+        tent_dist = graphs.set_vertex_value(unvisited, float('inf'))
         tent_dist[source] = 0
-        print(tent_dist)
         current = source
 
         while unvisited != []:
             for i in range(len(graphs.neighbours(current))): #loops over all nieghbours to current
                 if graphs.neighbours(current)[i] in unvisited: #checks if neighbour unvisited
-                    neighbour = str(graphs.neighbours(current)[i])
+                    neighbour = graphs.neighbours(current)[i]
                     weight = tent_dist[current] + data['times'][current][neighbour] #weight for nieghbour + weight current
-                    #print(tent_dist[neighbour])
                     if weight < tent_dist[neighbour]: #if weight smaller than tentative dist
                         tent_dist[neighbour] = graphs.set_vertex_value(neighbour, weight) #set new tent dist to weigth
-            unvisited.pop(current) #current visited so remove
-            current = min(unvisited, key=unvisited.get)
+            print(tent_dist)
+            unvisited.remove(current) #current visited so remove
+            current = min(tent_dist.values())
+            print(current)
     return tent_dist
 
-#print(djikstra('tramnetwork.json', 'Chalmers'))
+print(djikstra('tramnetwork.json', 'Chalmers'))
 
-print(graphs.set_vertex_value('Chalmers', 5))
 
 
 
