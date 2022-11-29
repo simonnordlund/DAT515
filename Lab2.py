@@ -89,9 +89,6 @@ class Graph():
             self.dic_weight[vertex2][vertex1] = weight
             return self.dic_weight
 
-        
-
-
 
 graph = Graph()
 graph_weight = Graph.WeightedGraph()
@@ -106,11 +103,15 @@ def dijkstra(self, graph, source, cost=lambda u,v: 1):
     tent_dist[source] = 0
 
     current = source
+
     while unvisited != []:
-        for i in range(len(graph.neigbours(current))):
-            if graph.neighbours(current)[i] in unvisited:
-
-
-
+        for i in range(len(graph.neigbours(current))): #loops over all nieghbours to current
+            if graph.neighbours(current)[i] in unvisited: #checks if neighbour unvisited
+                neighbour = graph.neighbours(current)[i]
+                weight = tent_dist[current] + self.data['times'][current][neighbour] #weight for nieghbour + weight current
+                if weight < tent_dist[neighbour]: #if weight smaller than tentative dist
+                    tent_dist[neighbour] = graph.set_vertex_value(neighbour, weight) #set new tent dist to weigth
+        unvisited.pop(current) #current visited
+        
 
 
