@@ -4,7 +4,7 @@ TRAM_FILE = './tramnetwork.json'
 
 class Graph():
 
-    def __init__(self):
+    def __init__(self): #run verey time class is called to create dictionaries
         with open(TRAM_FILE, 'r', encoding='utf-8') as infile:
             self.data = json.load(infile)
             self.dic_val = {}
@@ -14,12 +14,12 @@ class Graph():
                 self.dic_val[outer] = []
                 for inner in self.data['times'][outer]:
                     temp_list.append(inner)
-                self.dic[outer] = temp_list
+                self.dic[outer] = temp_list #dictionary of all stops with list nearby stops as value
             
-    def neighbours(self, vertex):
+    def neighbours(self, vertex): #find neighbours
         return self.dic[vertex]
 
-    def edges(self):
+    def edges(self): #gives edges
         edges = []
         for key in self.data['times']:
             for key2 in self.data['times'][key]:
@@ -27,22 +27,22 @@ class Graph():
                     edges.append([key, key2])
         return edges
 
-    def vertices(self):
+    def vertices(self): #gives all nodes aka stops
         vertices = []
         for key in self.data['stops']:
             vertices.append(key)
         return vertices
 
-    def __len__(self):
+    def __len__(self): #amount of stops
         count = len(self.dic)
         return count
 
-    def add_vertex(self, vertex):
+    def add_vertex(self, vertex): #adds vertex without neighbours
         if vertex not in self.dic:
             self.dic[vertex] = []
         return self.dic
 
-    def add_edge(self, vertex1, vertex2):
+    def add_edge(self, vertex1, vertex2): #adds edge between two stops
         if vertex1 in self.dic:
             self.dic[vertex1].append(vertex2)
         else:
@@ -53,7 +53,7 @@ class Graph():
             self.dic[vertex2] = [vertex1]
         return self.dic
     
-    def remove_vertex(self, vertex):
+    def remove_vertex(self, vertex): #removes stop from dictionary
         self.dic.pop(vertex)
         for key in self.dic:
             for i in range(len(self.dic[key])-1):
@@ -61,15 +61,15 @@ class Graph():
                     self.dic[key].remove(vertex)
         return self.dic
 
-    def remove_edge(self, vertex1, vertex2):
+    def remove_edge(self, vertex1, vertex2): #removes edge in dictionary
         self.dic[vertex1].remove(vertex2)
         self.dic[vertex2].remove(vertex1)
         return self.dic
 
-    def get_vertex_value(self, vertex):
+    def get_vertex_value(self, vertex): #gets value
         return self.dic_val[vertex]
 
-    def set_vertex_value(self, vertex, value):
+    def set_vertex_value(self, vertex, value): #sets value
         if isinstance(vertex, list):
             for i in range(len(vertex)):
                 self.dic_val[vertex[i]] = value
@@ -80,15 +80,15 @@ class Graph():
 
     class WeightedGraph():
 
-        def __init__(self):
+        def __init__(self): #runs every time class called
             with open(TRAM_FILE, 'r', encoding='utf-8') as infile:
                 self.data = json.load(infile)
                 self.dic_weight = self.data['times']
 
-        def get_weight(self, vertex1, vertex2):
+        def get_weight(self, vertex1, vertex2): #gets weigth between two vertices 
             return self.dic_weight[vertex1][vertex2]
 
-        def set_weight(self, vertex1, vertex2, weight):
+        def set_weight(self, vertex1, vertex2, weight): #sets weight
             self.dic_weight[vertex1][vertex2] = weight
             self.dic_weight[vertex2][vertex1] = weight
             return self.dic_weight
@@ -123,62 +123,85 @@ def djikstra(graph, source):
 
 print(djikstra('tramnetwork.json', 'Chalmers')) '''
 
-def dijkstra(source, target):
+def dijkstra(source, target): #shortest path finding algorithm
 
     graphs = Graph()
     graphs_weight = Graph.WeightedGraph()
-    dist = {}
-    prev = {}
-    unvisited = []
+    dist = {} #dictionary of distance between stops
+    prev = {} #previous stops, path
+    unvisited = [] #list of unvisted stops
 
     for v in graphs.vertices():
-        dist[v] = float('inf')
+        dist[v] = float('inf') #sets initial distance to inf for all stops
 
-    unvisited = graphs.vertices()
+    unvisited = graphs.vertices() #all stops unvisited
 
-    dist[source] = 0
+    dist[source] = 0 #distance to source 0
 
-    while unvisited != []:
+    while unvisited != []: #runs while there are unvisted stops
 
         temp_dist = {}
         for stop in unvisited:
-            temp_dist[stop] = dist[stop]
+            temp_dist[stop] = dist[stop] #distance for unvisted stops
 
-        min_val = min(temp_dist.values())
-        current = [key for key in temp_dist if temp_dist[key] == min_val]
-        current = current[0]
+        min_val = min(temp_dist.values()) #find minimum distance for all unvisited stops
+        current = [key for key in temp_dist if temp_dist[key] == min_val] #get key for minimum distance
+        current = current[0] #if multiple elements, choose first
 
-        unvisited.remove(current)
-        neighbour = graphs.neighbours(current)
+        unvisited.remove(current) #current now visited
+        neighbour = graphs.neighbours(current) #gets neighbours to current
 
-        for i in range(len(neighbour)):
-            if neighbour[i] in unvisited:
-                alt = dist[current] + graphs_weight.get_weight(current, neighbour[i])
-                if alt < dist[neighbour[i]]:
-                  dist[neighbour[i]] = alt
-                  prev[neighbour[i]] = current
+        for stop in neighbour: #loops over all neighbours
+            if stop in unvisited: #unvisted stops
+                alt = dist[current] + graphs_weight.get_weight(current, stop) #alternative dist, dist to get to current plus dist to nieghbour
+                if alt < dist[stop]: #save shortest dist
+                  dist[stop] = alt
+                  prev[stop] = current #save path
 
-    S = []
-    u = target
-    if u in prev or u == source:          
+    S = [] #stop sequence
+    u = target #start at target
+
+    if u in prev or u == source: #runs algorithm if path exists       
       while u in prev:   
-        S.append(u)                   
-        u = prev[u]  
-    S.append(source)                     
+        S.append(u) #add u to sequence                
+        u = prev[u] #go to stop before, algorithm runs backwards
+    S.append(source) #add source to sequence                    
 
     return S
 
-print(dijkstra('Chalmers', 'Långedrag'))
+#print(dijkstra('Lana', 'Vårväderstorget'))
+
+import os
+os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin/'
+
+def visualize():
+    import graphviz as gr
+
+    dot = gr.Graph(name = 'Graph')
+    graphs = Graph()
+    for v in graphs.vertices():
+        dot.node(v)
+    edges = graphs.edges()
+    for e in range(len(edges)):
+        dot.edge(edges[e][0], edges[e][1])
+    dot.render(format='png', view=True)
+
+'''
+def view_shortest(G, source, target, cost=lambda u,v: 1):
+    path = dijkstra(G, source, cost)[target]['path']
+    print(path)
+    colormap = {str(v): 'orange' for v in path}
+    print(colormap)
+    visualize(G, view='view', nodecolors=colormap)
+
+def demo():
+    G = Graph([(1,2),(1,3),(1,4),(3,4),(3,5),(3,6), (3,7), (6,7)])
+    view_shortest(G, 2, 6)
+
+if __name__ == '__main__':
+    demo() '''
 
 
-
-
-
-
-
-
-
-
-        
+visualize()
 
 
