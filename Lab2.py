@@ -4,7 +4,7 @@ TRAM_FILE = './tramnetwork.json'
 
 class Graph():
 
-    def __init__(self): #run verey time class is called to create dictionaries
+    def __init__(self): #run evrey time class is called to create dictionaries
         with open(TRAM_FILE, 'r', encoding='utf-8') as infile:
             self.data = json.load(infile)
             self.dic_val = {}
@@ -93,90 +93,78 @@ class Graph():
             self.dic_weight[vertex2][vertex1] = weight
             return self.dic_weight
 
+
+    def dijkstra(self, source, cost): #shortest path finding algorithm
+        
+        #graphs = Graph()
+        #graphs_weight = Graph.WeightedGraph()
+        dist = {} #dictionary of distance between stops
+        prev = {} #previous stops, path
+        unvisited = [] #list of unvisted stops
+
+        for v in self.vertices():
+            dist[v] = float('inf') #sets initial distance to inf for all stops
+
+        unvisited = self.vertices() #all stops unvisited
+
+        dist[source] = 0 #distance to source 0
+
+        while unvisited != []: #runs while there are unvisted stops
+
+            temp_dist = {}
+            for stop in unvisited:
+                temp_dist[stop] = dist[stop] #distance for unvisted stops
+
+            min_val = min(temp_dist.values()) #find minimum distance for all unvisited stops
+            current = [key for key in temp_dist if temp_dist[key] == min_val] #get key for minimum distance
+            current = current[0] #if multiple elements, choose first
+
+            unvisited.remove(current) #current now visited
+            neighbour = self.neighbours(current) #gets neighbours to current
+
+            for stop in neighbour: #loops over all neighbours
+                if stop in unvisited: #unvisted stops
+                    alt = dist[current] + cost[current][stop] #graphs_weight.get_weight, alternative dist, dist to get to current plus dist to nieghbour
+                    if alt < dist[stop]: #save shortest dist
+                        dist[stop] = alt
+                        prev[stop] = current #save path
+
+        dji = {} #djikstra dictionary
+
+        for target in graphs.vertices():
+            S = [] #stop sequence
+            u = target #start at target
+
+            if u in prev or u == source: #runs algorithm if path exists       
+                while u in prev:   
+                    S.append(u) #add u to sequence                
+                    u = prev[u] #go to stop before, algorithm runs backwards
+                S.append(source) #add source to sequence 
+            path = {'path': S}
+            dji[target] = path                   
+
+        return dji
+
+
+
 graphs = Graph()
 graph_weight = Graph.WeightedGraph()
-'''
-def djikstra(graph, source):
 
-    with open(graph, 'r', encoding='utf-8') as infile:
-        graphs = Graph()
-        data = json.load(infile)
-        unvisited = list(data['times'].keys())
-        tent_dist = graphs.set_vertex_value(unvisited, float('inf'))
-        tent_dist[source] = 0
-        tent_dist_temp = tent_dist
-        current = source
+with open('tramnetwork.json', 'r', encoding='utf-8') as infile:
+    data = json.load(infile)
+    weight = data['times']
 
-        while unvisited != []:
-            for i in range(len(graphs.neighbours(current))): #loops over all nieghbours to current
-                if graphs.neighbours(current)[i] in unvisited: #checks if neighbour unvisited
-                    neighbour = graphs.neighbours(current)[i]
-                    weight = tent_dist[current] + data['times'][current][neighbour] #weight for nieghbour + weight current
-                    if weight < tent_dist[neighbour]: #if weight smaller than tentative dist
-                        tent_dist[neighbour] = weight #set new tent dist to weigth
-                        tent_dist_temp[neighbour] = weight
-            unvisited.remove(current) #current visited so remove
-            tent_dist_temp.pop(current)
-            current = min(tent_dist_temp)
-            #print(current)
-    return tent_dist
+print(graphs.dijkstra('SKF', weight)['Chalmers']['path'])
 
-print(djikstra('tramnetwork.json', 'Chalmers')) '''
 
-def dijkstra(source, target): #shortest path finding algorithm
 
-    graphs = Graph()
-    graphs_weight = Graph.WeightedGraph()
-    dist = {} #dictionary of distance between stops
-    prev = {} #previous stops, path
-    unvisited = [] #list of unvisted stops
 
-    for v in graphs.vertices():
-        dist[v] = float('inf') #sets initial distance to inf for all stops
-
-    unvisited = graphs.vertices() #all stops unvisited
-
-    dist[source] = 0 #distance to source 0
-
-    while unvisited != []: #runs while there are unvisted stops
-
-        temp_dist = {}
-        for stop in unvisited:
-            temp_dist[stop] = dist[stop] #distance for unvisted stops
-
-        min_val = min(temp_dist.values()) #find minimum distance for all unvisited stops
-        current = [key for key in temp_dist if temp_dist[key] == min_val] #get key for minimum distance
-        current = current[0] #if multiple elements, choose first
-
-        unvisited.remove(current) #current now visited
-        neighbour = graphs.neighbours(current) #gets neighbours to current
-
-        for stop in neighbour: #loops over all neighbours
-            if stop in unvisited: #unvisted stops
-                alt = dist[current] + graphs_weight.get_weight(current, stop) #alternative dist, dist to get to current plus dist to nieghbour
-                if alt < dist[stop]: #save shortest dist
-                  dist[stop] = alt
-                  prev[stop] = current #save path
-
-    S = [] #stop sequence
-    u = target #start at target
-
-    if u in prev or u == source: #runs algorithm if path exists       
-      while u in prev:   
-        S.append(u) #add u to sequence                
-        u = prev[u] #go to stop before, algorithm runs backwards
-    S.append(source) #add source to sequence                    
-
-    return S
-
-#print(dijkstra('Lana', 'Vårväderstorget'))
 
 import os
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin/'
 
 def visualize():
     import graphviz as gr
-
     dot = gr.Graph(name = 'Graph')
     graphs = Graph()
     for v in graphs.vertices():
@@ -195,13 +183,11 @@ def view_shortest(G, source, target, cost=lambda u,v: 1):
     visualize(G, view='view', nodecolors=colormap)
 
 def demo():
-    G = Graph([(1,2),(1,3),(1,4),(3,4),(3,5),(3,6), (3,7), (6,7)])
+    G = ([(1,2),(1,3),(1,4),(3,4),(3,5),(3,6),(3,7),(6,7)])
     view_shortest(G, 2, 6)
 
 if __name__ == '__main__':
     demo() '''
 
-
-visualize()
 
 
