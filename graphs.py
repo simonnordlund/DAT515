@@ -176,22 +176,27 @@ import os
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin/'
 
 def visualize(graph, view='dot', name='mygraph', nodecolors={}, engine='dot'):
+
     import graphviz as gr
     dot = gr.Graph(name = 'Graph')
     g = graph
     for v in g.vertices():
-        dot.node(v, fillcolor=nodecolors[v])
+        if str(v) in nodecolors:
+            dot.node(str(v), color=nodecolors[str(v)])
+        else:
+            dot.node(str(v))
     edges = g.edges()
     for e in range(len(edges)):
-        dot.edge(edges[e][0], edges[e][1])
+        dot.edge(str(edges[e][0]), str(edges[e][1]))
     dot.render(format='png', view=True)
-    
+
+
 def view_shortest(G, source, target, cost=lambda u,v: 1):
-    path = dijkstra(G, source, cost)[target]['path']
-    print(path)
-    colormap = {str(v): 'orange' for v in path}
-    print(colormap)
-    visualize(G, view='view', nodecolors=colormap)
+        path = dijkstra(G, source, cost)[target]['path']
+        print(path)
+        colormap = {str(v): 'purple' for v in path}
+        print(colormap)
+        visualize(G, view='view', nodecolors=colormap)
 
 def demo():
     G = Graph([(1,2),(1,3),(1,4),(3,4),(3,5),(3,6), (3,7), (6,7)])
