@@ -115,7 +115,6 @@ def lines_between_stops(tramlines, stop1, stop2): #checks which lines go through
     return lines
 
 
-
 def time_between_stops(tramlines, tramtimes, line, stop1, stop2): #checks time between two stops given specific line
 
     time = 0
@@ -148,12 +147,12 @@ def distance_between_stops(tramstops, stop1, stop2): #calculates geographical di
     lat2 = float(tramstops[stop2]['lat']) #lat for stop2
     lon2 = float(tramstops[stop2]['lon']) #lon for stop2
 
-    delta_lat = (lat1-lat2)*math.pi/180 #difference in lat in radians
-    delta_lon = (lon1-lon2)*math.pi/180 #difference in lon in radians
-    mean_lat = ((lat1+lat2)/2)*math.pi/180 #mean lat in radians
-    radius = 6371.009 #earth radius in km
+    delta_lat = math.abs(lat2-lat1)*(math.pi/180) #difference in lat in radians
+    delta_lon = math.abs(lon2-lon1)*(math.pi/180) #difference in lon in radians
+    mean_lat = ((lat1+lat2)/2)*(math.pi/180) #mean lat in radians
+    radius = 6371 #earth radius in km
 
-    dist = radius*math.sqrt((delta_lat)**2 + (math.cos(mean_lat)*delta_lon)**2) #distance assuming spherical earth in km
+    dist = radius*math.sqrt(delta_lat**2 + (math.cos(mean_lat)*delta_lon)**2) #distance assuming spherical earth in km
     
     return dist
 

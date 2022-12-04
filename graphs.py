@@ -3,7 +3,8 @@ from itertools import groupby
 
 class Graph:
 
-    def __init__(self, G): #run evrey time class is called to create dictionarie
+    def __init__(self, G = 'tramnetwork.json'): #run evrey time class is called to create dictionarie
+
         self._valuelist = {}
         self._adjlist = {}
 
@@ -139,7 +140,7 @@ def dijkstra(graph, source, cost=lambda u,v: 1): #shortest path finding algorith
                     dist[stop] = alt
                     prev[stop] = current #save path
 
-    dji = {} #djikstra dictionary
+    dij = {} #djikstra dictionary
 
     for target in g.vertices():
         S = [] #stop sequence
@@ -151,9 +152,9 @@ def dijkstra(graph, source, cost=lambda u,v: 1): #shortest path finding algorith
                 u = prev[u] #go to stop before, algorithm runs backwards
             S.append(source) #add source to sequence 
         path = {'path': S}
-        dji[target] = path                   
+        dij[target] = path                   
 
-    return dji
+    return dij
 
 
 G = [(1,2),(1,3),(1,4),(3,4),(3,5),(3,6),(3,7),(6,7)]
