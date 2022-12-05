@@ -16,7 +16,7 @@ class TramStop():
         self._lines.append(line)
         return self._lines
 
-    def get_lines(self):
+    def get_lines(self): 
         return self._lines
 
     def get_name(self):
@@ -44,53 +44,46 @@ class TramLine():
 
 class TramNetwork(gr.WeightedGraph):
     
-    def __init__(self):
-        super(TramNetwork, self).__init__(G)
-        #with open('tramnetwork.json', 'r') as infile:
-            #tramdict = json.load(infile)
+    def __init__(self, stops, lines, times, G = None):
+        super(TramNetwork, self).__init__(G) #inherit from Graph
 
-        self._linedic = {}
-        self._stopdic = {}
-        self._timedic = {}
+        self._linedic = lines
+        self._stopdic = stops
+        self._timedic = times
 
-            #self._linedic = tramdict['lines']
-            #self._timedic = tramdict['times']
-            #self._stopdic = tramdict['stops']
 
-    def all_lines(self):
-        return self._linedic.keys
+    def all_lines(self): #returns all lines
+        keys = []
+        for key in self._linedic:
+            keys.append(key)
+        return keys
 
-    def all_stops(self):
-        return self._stopdic.keys
 
-    def extreme_positions(self):
+    def all_stops(self): #return all stops
+        keys = []
+        for key in self._stopdic:
+            keys.append(key)
+        return keys
 
-        maxval_lat = 0
-        minval_lat = float('inf')
 
-        maxval_lon = 0
-        minval_lon = float('inf')
+    def extreme_positions(self): #get extreme lat and lon position
 
-        for key in self._stopdic: 
+        lat = []
+        lon = []
 
-            lat_val = float(self._stopdic[key]['lat'])
-            lon_val = float(self._stopdic[key]['lon'])
+        for stop in self._stopdic: #append all lon lat
+            lat.append(float(self._stopdic[stop]['lat']))
+            lon.append(float(self._stopdic[stop]['lon']))
+        
+        lat.sort() #sort lists after value
+        lon.sort() #sort lists after value
 
-            #finding max min lat
-            if lat_val> maxval_lat:
-                maxval_lat = lat_val
+        max_lat = lat[-1]
+        min_lat = lat[0]
+        max_lon = lon[-1]
+        min_lon = lon[0]
 
-            elif lat_val < minval_lat:
-                minval_lat = lat_val
-
-            #finding max and min lon
-            if lon_val> maxval_lon:
-                maxval_lon = lon_val
-
-            elif lon_val< minval_lon:
-                minval_lon = lon_val
-
-        dic = {'lat': {'max': maxval_lat, 'min': minval_lat}, 'lon': {'max': maxval_lon, 'min': minval_lon}}
+        dic = {'lat': {'max': max_lat, 'min': min_lat}, 'lon': {'max': max_lon, 'min': min_lon}}
         
         return dic
 
@@ -126,18 +119,36 @@ class TramNetwork(gr.WeightedGraph):
         return self._stopdic[stop] #returns dictionary
 
     def transition_times(self, stop1, stop2):
-        return self._stoptime[stop1][stop2]
+        return self._stoptime[stop1][stop2] #time between adjacent stops
 
 
 TRAM_FILE = './tramnetwork.json'
 
 def ReadTramNetwork(tramfile = TRAM_FILE):
-    network = TramNetwork()
-    stopdic
+
+    with open(tramfile, 'r', encoding = 'utf-8') as infile:
+        data = json.load(infile)
+        stops = data['stops']
+        lines = data['lines']
+        times = data['times']
+
+        network = TramNetwork(stops, lines, times) #network obj with all graphs and network functions, empty
+    
+    for stop in stops:
+        network.set_vertex_value(stop, stops[stop]) #add vertex value, lat lon
+        network.add_vertex(stop) #add vertex as stops
+
+    for stop1 in times:
+        for stop2 in times[stop1]:
+            network.set_weight(stop1, stop2, times[stop1][stop2]) #set weight as time between stop
+            network.add_edge(stop1, stop2) #add edge between adjacent stops
+
+    return network
 
 
 
+r = ReadTramNetwork() #network obj, not empty
+cost = lambda u,v: r.get_weight(u,v) #cost to travel between two adj stops
 
-
-
+#gr.view_shortest(r, 'Saltholmen', 'Chalmers', cost)
 

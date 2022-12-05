@@ -1,10 +1,10 @@
 graph "Graph" {
-	1 [color=purple]
-	2 [color=purple]
-	3 [color=purple]
+	1 [fillcolor=darkseagreen style=filled]
+	2 [fillcolor=darkseagreen style=filled]
+	3 [fillcolor=darkseagreen style=filled]
 	4
 	5
-	6 [color=purple]
+	6 [fillcolor=darkseagreen style=filled]
 	7
 	1 -- 2
 	1 -- 3

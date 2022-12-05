@@ -3,27 +3,25 @@ from itertools import groupby
 
 class Graph:
 
-    def __init__(self, G = 'tramnetwork.json'): #run evrey time class is called to create dictionarie
+    def __init__(self, G = None): #run evrey time class is called to create dictionarie
 
         self._valuelist = {}
         self._adjlist = {}
 
-        for edge in G:
-            if edge[0] in self._adjlist:
-                self._adjlist[edge[0]].append(edge[1])
-            else:
-                self._adjlist[edge[0]] = [edge[1]]
-            if edge[1] in self._adjlist:
-                self._adjlist[edge[1]].append(edge[0])
-            else:
-                self._adjlist[edge[1]] = [edge[0]]
+        if G != None: #run only if edges are given
+            for edge in G: #make adjacency list from edges
+                if edge[0] in self._adjlist:
+                    self._adjlist[edge[0]].append(edge[1])
+                else:
+                    self._adjlist[edge[0]] = [edge[1]]
+                if edge[1] in self._adjlist:
+                    self._adjlist[edge[1]].append(edge[0])
+                else:
+                    self._adjlist[edge[1]] = [edge[0]]
+            
+            for key in self._adjlist:
+                self._valuelist[key] = []
 
-        
-        for key in self._adjlist:
-            self._valuelist[key] = []
-
-        
-   
 
     def neighbours(self, vertex): #find neighbours
         return self._adjlist[vertex]
@@ -79,26 +77,29 @@ class Graph:
         return self._valuelist[vertex]
 
     def set_vertex_value(self, vertex, value): #sets value
-        if isinstance(vertex, list):
-            for i in range(len(vertex)):
-                self._valuelist[vertex[i]] = value
-        else:
-            self._adjlist[vertex] = value
+        self._valuelist[vertex] = value
         return self._valuelist
 
 
 
 class WeightedGraph(Graph):
 
-    def __init__(self, G): #runs every time class called
+    def __init__(self, G = None): #runs every time class called
         super(WeightedGraph, self).__init__(G)
         self._weightlist = {}
         edges = self.edges()
         for i in range(len(edges)):
             self._weightlist[edges[i]] = []
 
-    def get_weight(self, vertex1, vertex2): #gets weigth between two vertices 
-        return self._weightlist[(vertex1, vertex2)]
+
+    def get_weight(self, vertex1, vertex2): #gets weigth between two vertices
+
+        if (vertex1, vertex2) in self._weightlist:
+            return self._weightlist[(vertex1, vertex2)]
+
+        elif (vertex2, vertex1) in self._weightlist:
+            return self._weightlist[(vertex2, vertex1)]
+
 
     def set_weight(self, vertex1, vertex2, weight): #sets weight
         self._weightlist[(vertex1, vertex2)] = weight
@@ -157,45 +158,35 @@ def dijkstra(graph, source, cost=lambda u,v: 1): #shortest path finding algorith
     return dij
 
 
-G = [(1,2),(1,3),(1,4),(3,4),(3,5),(3,6),(3,7),(6,7)]
-gw = WeightedGraph(G)
-graph = Graph(G)
-
-
-def cost2(u, v):
-    cost = gw.get_weight(u,v)
-    return cost
-cost = lambda u,v: cost2
-
-cost3 = lambda u,v: 1
-
-#print(dijkstra(G, 1, cost3)[7]['path'])
-
-
 
 import os
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin/'
 
+
 def visualize(graph, view='dot', name='mygraph', nodecolors={}, engine='dot'):
 
     import graphviz as gr
-    dot = gr.Graph(name = 'Graph')
+    dot = gr.Graph(name = 'Graph') #create dot object
     g = graph
+
     for v in g.vertices():
-        if str(v) in nodecolors:
-            dot.node(str(v), color=nodecolors[str(v)])
+        if str(v) in nodecolors: #if v should be colored
+            dot.node(str(v), fillcolor=nodecolors[str(v)], style = 'filled') #add node with color
         else:
-            dot.node(str(v))
-    edges = g.edges()
-    for e in range(len(edges)):
-        dot.edge(str(edges[e][0]), str(edges[e][1]))
-    dot.render(format='png', view=True)
+            dot.node(str(v)) #add node without color
+
+    edges = g.edges() #all edges
+    for e in range(len(edges)): 
+        dot.edge(str(edges[e][0]), str(edges[e][1])) #add edges to dot 
+
+    dot.render(format='png', view=True) #view
 
 
 def view_shortest(G, source, target, cost=lambda u,v: 1):
+
         path = dijkstra(G, source, cost)[target]['path']
         print(path)
-        colormap = {str(v): 'purple' for v in path}
+        colormap = {str(v): 'darkseagreen' for v in path}
         print(colormap)
         visualize(G, view='view', nodecolors=colormap)
 
