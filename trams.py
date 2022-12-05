@@ -152,3 +152,10 @@ cost = lambda u,v: r.get_weight(u,v) #cost to travel between two adj stops
 
 #gr.view_shortest(r, 'Saltholmen', 'Chalmers', cost)
 
+def demo():
+        G = ReadTramNetwork()
+        a, b = input('from,to ').split(',')
+        gr.view_shortest(G, a, b)
+
+if __name__ == '__main__':
+    demo()
