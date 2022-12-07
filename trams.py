@@ -124,7 +124,7 @@ class TramNetwork(gr.WeightedGraph):
 
 TRAM_FILE = './tramnetwork.json'
 
-def ReadTramNetwork(tramfile = TRAM_FILE):
+def readTramNetwork(tramfile = TRAM_FILE):
 
     with open(tramfile, 'r', encoding = 'utf-8') as infile:
         data = json.load(infile)
@@ -147,13 +147,13 @@ def ReadTramNetwork(tramfile = TRAM_FILE):
 
 
 
-r = ReadTramNetwork() #network obj, not empty
+r = readTramNetwork() #network obj, not empty
 cost = lambda u,v: r.get_weight(u,v) #cost to travel between two adj stops
 
 #gr.view_shortest(r, 'Saltholmen', 'Chalmers', cost)
 
 def demo():
-        G = ReadTramNetwork()
+        G = readTramNetwork()
         a, b = input('from,to ').split(',')
         gr.view_shortest(G, a, b)
 

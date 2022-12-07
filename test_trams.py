@@ -10,7 +10,7 @@ class TestTramData(unittest.TestCase):
     
             
     def setUp(self):
-        self.tn = ts.ReadTramNetwork()
+        self.tn = ts.readTramNetwork()
 
 
     def BFS(self ,G, node, goal = lambda n : False):
@@ -34,7 +34,7 @@ class TestTramData(unittest.TestCase):
             self.assertTrue(sorted(testlist), sorted(self.tn.vertices()))
 
 def demo():
-    G = ts.ReadTramNetwork()
+    G = ts.readTramNetwork()
     a, b = input('from,to ').split(',')
     gs.view_shortest(G, a, b)
 
