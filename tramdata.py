@@ -147,12 +147,12 @@ def distance_between_stops(tramstops, stop1, stop2): #calculates geographical di
     lat2 = float(tramstops[stop2]['lat']) #lat for stop2
     lon2 = float(tramstops[stop2]['lon']) #lon for stop2
 
-    delta_lat = math.abs(lat1-lat2)*math.pi/180 #difference in lat in radians
-    delta_lon = math.abs(lon1-lon2)*math.pi/180 #difference in lon in radians
-    mean_lat = ((lat1+lat2)/2)*math.pi/180 #mean lat in radians
+    delta_lat = abs(lat2-lat1)*(math.pi/180) #difference in lat in radians
+    delta_lon = abs(lon2-lon1)*(math.pi/180) #difference in lon in radians
+    mean_lat = ((lat1+lat2)/2)*(math.pi/180) #mean lat in radians
     radius = 6371 #earth radius in km
 
-    dist = radius*math.sqrt((delta_lat)**2 + (math.cos(mean_lat)*delta_lon)**2) #distance assuming spherical earth in km
+    dist = radius*math.sqrt(delta_lat**2 + (math.cos(mean_lat)*delta_lon)**2) #distance assuming spherical earth in km
     
     return dist
 
@@ -162,6 +162,7 @@ def answer_query(tramdict, query):
     tramlines = tramdict['lines']
     tramtimes = tramdict['times']
     tramstops = tramdict['stops']
+
     query = query.split(maxsplit = 1)
 
     while query[0] != 'quit': #Loops until given "quit"
@@ -170,10 +171,9 @@ def answer_query(tramdict, query):
             print(lines_via_stop(tramlines, query[1]))
 
         elif query[0] == 'between':
-            stop1 = query[1].split('and')[0] 
-            stop2 = query[1].split('and')[1]
-            stop1 = stop1[:-1]
-            stop2 = stop2[1:]
+            stop1 = query[1].split(' and ')[0] 
+            stop2 = query[1].split(' and ')[1]
+            print(stop1, stop2)
             
             if stop1 in tramstops and stop2 in tramstops:
                 print(lines_between_stops(tramlines, stop1, stop2))
@@ -181,11 +181,11 @@ def answer_query(tramdict, query):
                 print('Unknown arguments.')
 
         elif query[0] == 'time':
-            stop2 = query[1].split('to')[1]
-            stop1 = (query[1].split('to')[0]).split('from')[1]
-            stop1 = stop1[1:-1]
-            stop2 = stop2[1:]
-            line = ((query[1].split('to')[0]).split('from')[0]).split()[1]
+            stop2 = query[1].split(' to ')[1]
+            stop1 = (query[1].split(' to ')[0]).split(' from ')[1]
+            #stop1 = stop1[1:-1]
+            #stop2 = stop2[1:]
+            line = ((query[1].split(' to ')[0]).split(' from ')[0]).split()[1]
 
             if stop1 in tramstops and stop2 in tramstops and line in tramlines:
                 print(time_between_stops(tramlines, tramtimes, line, stop1, stop2))
@@ -194,11 +194,9 @@ def answer_query(tramdict, query):
                 print('Unknown arguments.')
 
         elif query[0] == 'distance':
-            stop2 = query[1].split('to')[1]
-            stop1 = (query[1].split('to')[0]).split('from')[1]
-            stop1 = stop1[1:-1]
-            stop2 = stop2[1:]
-
+            stop2 = query[1].split(' to ')[1]
+            stop1 = (query[1].split(' to ')[0]).split('from ')[1]
+            print(stop1, stop2)
             if stop1 in tramstops and stop2 in tramstops:
                 print(distance_between_stops(tramstops, stop1, stop2))
 
@@ -220,7 +218,7 @@ def dialogue(jsonfile='tramnetwork.json'):
         data = json.load(infile)
         inp = input('> ')
         ans = answer_query(data, inp)
-
+    
     return ans
 
 
