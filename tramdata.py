@@ -152,7 +152,7 @@ def distance_between_stops(tramstops, stop1, stop2): #calculates geographical di
     mean_lat = ((lat1+lat2)/2)*math.pi/180 #mean lat in radians
     radius = 6371 #earth radius in km
 
-    dist = radius*math.sqrt((delta_lat)**2 + (math.cos(mean_lat)*delta_lon)**2) #distance assuming spherical earth in km
+    dist = radius*math.sqrt(delta_lat**2 + (math.cos(mean_lat)*delta_lon)**2) #distance assuming spherical earth in km
     
     return dist
 
