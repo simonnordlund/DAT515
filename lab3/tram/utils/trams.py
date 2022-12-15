@@ -2,8 +2,9 @@ import json
 
 # imports added in Lab3 version
 import math
-import os
-from .graphs import *
+#import os
+#import graphs as gr
+import tram.utils.graphs as gr
 from django.conf import settings
 
 
@@ -11,7 +12,6 @@ from django.conf import settings
 # TODO: copy your json file from Lab 1 here
 
 TRAM_FILE = './tramnetwork.json'
-
 
 # TODO: use your lab 2 class definition, but add one method
 # class TramNetwork(WeightedGraph):    
@@ -22,7 +22,7 @@ TRAM_FILE = './tramnetwork.json'
         # return minlon, minlat, maxlon, maxlat
 
 
-class TramNetwork(WeightedGraph):
+class TramNetwork(gr.WeightedGraph):
     
     def __init__(self, stops, lines, times, G = None):
         super(TramNetwork, self).__init__(G) #inherit from Graph
@@ -58,14 +58,13 @@ class TramNetwork(WeightedGraph):
         lat.sort() #sort lists after value
         lon.sort() #sort lists after value
 
-        max_lat = lat[-1]
-        min_lat = lat[0]
-        max_lon = lon[-1]
-        min_lon = lon[0]
+        max_lat = float(lat[-1])
+        min_lat = float(lat[0])
+        max_lon = float(lon[-1])
+        min_lon = float(lon[0])
 
-        dic = {'lat': {'max': max_lat, 'min': min_lat}, 'lon': {'max': max_lon, 'min': min_lon}}
-        
-        return dic
+        list = min_lat, min_lon, max_lat, max_lon
+        return list
 
 
     def geo_distance(self, stop1, stop2):
@@ -96,7 +95,7 @@ class TramNetwork(WeightedGraph):
         return lines
 
     def stop_positions(self, stop):
-        return self._stopdic[stop] #returns dictionary
+        return self._stopdic[stop]['lat'], self._stopdic[stop]['lon'] #returns dictionary
 
     def transition_times(self, stop1, stop2):
         return self._stoptime[stop1][stop2] #time between adjacent stops
@@ -126,13 +125,47 @@ def readTramNetwork():
     return network
 
 
+network = readTramNetwork()
+#print(network.vertices())
 
 
 # Bonus task 1: take changes into account and show used tram lines
 
-def specialize_stops_to_lines(network):
-    # TODO: write this function as specified
+def specialize_stops_to_lines():
+
+    with open(TRAM_FILE, 'r', encoding = 'utf-8') as infile:
+        data = json.load(infile)
+        stops = data['stops']
+        lines = data['lines']
+        times = data['times']
+
+        network = TramNetwork(stops, lines, times) #network obj with all graphs and network functions, empty
+    
+    for stop in stops:
+        for line in lines:
+            network.set_vertex_value((stop,line), stops[stop]) #add vertex value, lat lon
+            if stop in line:
+                network.add_vertex((stop, line)) #add vertex as stops
+
+    for stop1 in times:
+        for stop2 in times[stop1]:
+            for line in lines:
+                if stop1 in lines[line] and stop2 in lines[line]:
+                    network.add_edge((stop1, line), (stop2, line)) #add edge between adjacent stops
+                    network.set_weight((stop1, line), (stop2, line), times[stop1][stop2])
+
+    for stop in stops:
+        lines_for_stop = network.stop_lines(stop)
+        for line1 in lines_for_stop:
+            for line2 in lines_for_stop:
+                if line1 != line2:
+                    network.add_edge((stop, line1), (stop, line2)) #add edge between adjacent stops
+                    network.set_weight((stop, line1), (stop, line2), 5)
+
     return network
+
+
+n = specialize_stops_to_lines()
 
 
 def specialized_transition_time(spec_network, a, b, changetime=10):
@@ -143,5 +176,3 @@ def specialized_transition_time(spec_network, a, b, changetime=10):
 def specialized_geo_distance(spec_network, a, b, changedistance=0.02):
     # TODO: write this function as specified
     return changedistance
-
-

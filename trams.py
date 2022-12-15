@@ -95,8 +95,8 @@ class TramNetwork(gr.WeightedGraph):
         lat2 = float(self._stopdic[stop2]['lat']) #lat for stop2
         lon2 = float(self._stopdic[stop2]['lon']) #lon for stop2
 
-        delta_lat = math.abs(lat2-lat1)*(math.pi/180) #difference in lat in radians
-        delta_lon = math.abs(lon2-lon1)*(math.pi/180) #difference in lon in radians
+        delta_lat = abs(lat2-lat1)*(math.pi/180) #difference in lat in radians
+        delta_lon = abs(lon2-lon1)*(math.pi/180) #difference in lon in radians
         mean_lat = ((lat1+lat2)/2)*(math.pi/180) #mean lat in radians
         radius = 6371 #earth radius in km
 
