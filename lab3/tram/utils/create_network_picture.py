@@ -35,7 +35,7 @@ def scaled_position(network):
 # Bonus task 2: create a json file that returns the actual traffic information, and rerun the map creation
 
 def stop_url(stop):
-    with open(TRAM_URL_FILE) as file:
+    with open(TRAM_URL_FILE, encoding='utf-8') as file:
         stop_urls = json.loads(file.read())        
     return stop_urls.get(stop, '.')
 

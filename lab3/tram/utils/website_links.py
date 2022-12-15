@@ -14,13 +14,11 @@ soup = BeautifulSoup(html.text, 'html.parser')
 URL_dic = {}
 
 #child_soup = soup.find_all('a', ('Zon A'))
-for tag in soup.find_all("a", text=re.compile("Zon.*")):
+for tag in soup.find_all("a", text=re.compile("Zon A.*")):
     stop = tag.string.splitlines()[1].lstrip()[:-1]
     codename = tag.get('href').replace('/reseplanering/hallplatser/', '')[:-1]
     final_URL = 'https://avgangstavla.vasttrafik.se/?source=vasttrafikse-stopareadetailspage&stopAreaGid=' + codename
     URL_dic[stop] = final_URL
-
-print(URL_dic)
 
 
 file = open('URL.json', 'w', encoding = 'utf-8')
