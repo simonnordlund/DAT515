@@ -83,9 +83,8 @@ class TramNetwork(gr.WeightedGraph):
         max_lon = lon[-1]
         min_lon = lon[0]
 
-        dic = {'lat': {'max': max_lat, 'min': min_lat}, 'lon': {'max': max_lon, 'min': min_lon}}
-        
-        return dic
+        list = min_lat, min_lon, max_lat, max_lon
+        return list
 
 
     def geo_distance(self, stop1, stop2):
@@ -95,8 +94,8 @@ class TramNetwork(gr.WeightedGraph):
         lat2 = float(self._stopdic[stop2]['lat']) #lat for stop2
         lon2 = float(self._stopdic[stop2]['lon']) #lon for stop2
 
-        delta_lat = math.abs(lat2-lat1)*(math.pi/180) #difference in lat in radians
-        delta_lon = math.abs(lon2-lon1)*(math.pi/180) #difference in lon in radians
+        delta_lat = abs(lat2-lat1)*(math.pi/180) #difference in lat in radians
+        delta_lon = abs(lon2-lon1)*(math.pi/180) #difference in lon in radians
         mean_lat = ((lat1+lat2)/2)*(math.pi/180) #mean lat in radians
         radius = 6371 #earth radius in km
 
@@ -116,7 +115,7 @@ class TramNetwork(gr.WeightedGraph):
         return lines
 
     def stop_positions(self, stop):
-        return self._stopdic[stop] #returns dictionary
+        return self._stopdic[stop]['lat'], self._stopdic[stop]['lon'] #returns position
 
     def transition_times(self, stop1, stop2):
         return self._stoptime[stop1][stop2] #time between adjacent stops
@@ -124,7 +123,7 @@ class TramNetwork(gr.WeightedGraph):
 
 TRAM_FILE = './tramnetwork.json'
 
-def ReadTramNetwork(tramfile = TRAM_FILE):
+def readTramNetwork(tramfile = TRAM_FILE):
 
     with open(tramfile, 'r', encoding = 'utf-8') as infile:
         data = json.load(infile)
@@ -147,13 +146,13 @@ def ReadTramNetwork(tramfile = TRAM_FILE):
 
 
 
-r = ReadTramNetwork() #network obj, not empty
+r = readTramNetwork() #network obj, not empty
 cost = lambda u,v: r.get_weight(u,v) #cost to travel between two adj stops
 
 #gr.view_shortest(r, 'Saltholmen', 'Chalmers', cost)
 
 def demo():
-        G = ReadTramNetwork()
+        G = readTramNetwork()
         a, b = input('from,to ').split(',')
         gr.view_shortest(G, a, b)
 
