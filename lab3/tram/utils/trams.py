@@ -2,7 +2,6 @@ import json
 
 # imports added in Lab3 version
 import math
-#import os
 #import graphs as gr
 import tram.utils.graphs as gr
 from django.conf import settings

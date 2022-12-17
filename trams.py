@@ -83,9 +83,8 @@ class TramNetwork(gr.WeightedGraph):
         max_lon = lon[-1]
         min_lon = lon[0]
 
-        dic = {'lat': {'max': max_lat, 'min': min_lat}, 'lon': {'max': max_lon, 'min': min_lon}}
-        
-        return dic
+        list = min_lat, min_lon, max_lat, max_lon
+        return list
 
 
     def geo_distance(self, stop1, stop2):
@@ -116,7 +115,7 @@ class TramNetwork(gr.WeightedGraph):
         return lines
 
     def stop_positions(self, stop):
-        return self._stopdic[stop] #returns dictionary
+        return self._stopdic[stop]['lat'], self._stopdic[stop]['lon'] #returns position
 
     def transition_times(self, stop1, stop2):
         return self._stoptime[stop1][stop2] #time between adjacent stops

@@ -59,6 +59,10 @@ def show_shortest(dep, dest):
         quick_list.append(key[0])
     for key in shortest_path:
         short_list.append(key[0])
+
+    quick_list.reverse()
+    short_list.reverse()
+    short_list = short_list[1:]
     
     timepath = 'Quickest: ' + ', '.join(quick_list) + ', ' + str(time[quickest_key]) + ' min'
     geopath = 'Shortest: ' + ', '.join(short_list) + ', ' + str(round(dist[shortest_key], 1)) + ' km'
