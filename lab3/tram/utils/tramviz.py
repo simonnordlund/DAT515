@@ -64,17 +64,17 @@ def show_shortest(dep, dest):
     short_list.reverse()
     short_list = short_list[1:]
     
-    timepath = 'Quickest: ' + ', '.join(quick_list) + ', ' + str(time[quickest_key]) + ' min'
-    geopath = 'Shortest: ' + ', '.join(short_list) + ', ' + str(round(dist[shortest_key], 1)) + ' km'
+    timepath = 'Quickest (yellow): ' + ', '.join(quick_list) + ', ' + str(time[quickest_key]) + ' min'
+    geopath = 'Shortest (red): ' + ', '.join(short_list) + ', ' + str(round(dist[shortest_key], 1)) + ' km'
 
 
     def colors(v):
         if v in short_list and v not in quick_list:
-            return 'pink' #shortest path
+            return 'yellow' #shortest path
         elif v in quick_list and v not in short_list:
-            return 'orange' #quickest path
+            return 'orangered' #quickest path
         elif v in quick_list and v in short_list:
-            return 'darkkhaki' #quick = short
+            return 'orange' #quick = short
         else:
             return 'white'
             
